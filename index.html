@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS System - Serabih Telon (Form)</title>
+    <title>POS System - Serabih Telon (GAS & Gist)</title>
     <!-- Gunakan CDN Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,7 +55,7 @@
     <div class="container mx-auto p-3 sm:p-4 pb-56">
         <header class="mb-6 sm:mb-8 flex justify-between items-center">
             <div>
-                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Point of Sale (Form)</h1>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Point of Sale (GAS & Gist)</h1>
                 <p class="text-gray-500 text-sm sm:text-base">Pilih produk untuk ditambahkan ke transaksi.</p>
             </div>
             <!-- Tombol Riwayat -->
@@ -118,7 +118,7 @@
             
             <div class="flex justify-end gap-3 mt-6">
                 <button onclick="closeCashierModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition">Batal</button>
-                <button onclick="submitToForm()" id="confirm-save-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">Simpan Transaksi</button>
+                <button onclick="submitToGAS()" id="confirm-save-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">Simpan Transaksi</button>
             </div>
         </div>
     </div>
@@ -204,10 +204,8 @@
    KONFIGURASI URL API
 ------------------------------------------------------------ */
 const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/77aeb061077629b9ef1c49c1e3750bd6/raw/products.json";
-// Ganti bagian ini dengan URL Web App GAS Anda untuk membaca data
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyak_c3bUQ6FE4yu3A6tQv2IQiN5YM1xLsL_0iXZPk6-QXl-iGHInt8G9Xwm0EQB3RSaQ/exec"; // Sudah diisi dengan URL Anda
-// Ganti bagian ini dengan URL endpoint Google Form Anda untuk menyimpan data
-const FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdv4BND962osWXm2TXWft1jS2HuS0dv4JvtGcA_kk1yAs7I7w/formResponse"; // Ganti /viewform dengan /formResponse
+// Ganti bagian ini dengan URL Web App GAS Anda untuk menyimpan dan mengambil riwayat
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"; // Ganti YOUR_DEPLOYMENT_ID
 
 /* ------------------------------------------------------------
    VARIABEL GLOBAL
@@ -244,7 +242,7 @@ window.onload = () => {
 };
 
 /* ------------------------------------------------------------
-   FUNGSI PRODUK
+   FUNGSI PRODUK (dari Gist)
 ------------------------------------------------------------ */
 async function fetchProducts() {
   try {
@@ -256,7 +254,7 @@ async function fetchProducts() {
     productContainer.innerHTML = '';
 
     if (!products.length) {
-      productContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10">Belum ada produk dimuat. Cek Spreadsheet dan Gist Anda.</div>';
+      productContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10">Belum ada produk dimuat dari Gist.</div>';
       return;
     }
 
@@ -270,8 +268,8 @@ async function fetchProducts() {
       productContainer.appendChild(btn);
     });
   } catch (err) {
-    console.error("Error fetching products:", err);
-    loadingMessage.innerHTML = `<span class="text-red-500">Gagal memuat produk: ${err.message}</span>`;
+    console.error("Error fetching products from Gist:", err);
+    loadingMessage.innerHTML = `<span class="text-red-500">Gagal memuat produk dari Gist: ${err.message}</span>`;
   }
 }
 
@@ -348,9 +346,9 @@ function closeCashierModal() {
 }
 
 /* ------------------------------------------------------------
-   FUNGSI SUBMIT KE GOOGLE FORM
+   FUNGSI SUBMIT KE GAS
 ------------------------------------------------------------ */
-async function submitToForm() {
+async function submitToGAS() {
   const confirmBtn = el('confirm-save-button');
   const cashier = el('cashier-name').value.trim();
 
@@ -368,36 +366,36 @@ async function submitToForm() {
   const transactionId = `TRX-${Date.now().toString().slice(-8)}`;
   const transactionDate = new Date().toISOString();
 
-  // Buat payload untuk dikirim ke Form
-  // Ganti 'entry.XXXXXXXX' dengan ID field sebenarnya dari Google Form Anda
-  // ID field ini didapat dari source code form Anda
-  const formData = new FormData();
-  formData.append('entry.1726412470', transactionId); // ID field untuk ID Transaksi
-  formData.append('entry.1401204974', new Date(transactionDate).toLocaleString('id-ID')); // ID field untuk Tanggal
-  formData.append('entry.1042813441', cashier); // ID field untuk Nama Kasir
-  formData.append('entry.886153465', total); // ID field untuk Total Pembayaran
-  formData.append('entry.1470787116', JSON.stringify(cart)); // ID field untuk Detail Item (JSON)
+  const transactionData = {
+    id: transactionId,
+    cashier: cashier,
+    total: total,
+    date: transactionDate, // Tidak wajib dikirim jika GAS hanya mencatat waktu saat ini
+    items: cart
+  };
 
   try {
     isSaving = true;
     confirmBtn.disabled = true;
     confirmBtn.textContent = "Menyimpan...";
 
-    const res = await fetch(FORM_RESPONSE_URL, {
+    const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      body: formData
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(transactionData)
     });
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`HTTP ${res.status} - ${errorText}`);
+    }
+    const responseData = await res.json();
+    if (responseData.status !== 'success') {
+        throw new Error(responseData.message || 'Gagal menyimpan transaksi.');
+    }
 
     // Simpan data lokal untuk struk
-    lastTransactionData = {
-        id: transactionId,
-        date: transactionDate,
-        cashier: cashier,
-        total: total,
-        items: cart
-    };
+    lastTransactionData = transactionData;
 
     // Tampilkan pesan sukses
     showAlert('success', 'Transaksi Tersimpan', 'Data transaksi berhasil dikirim ke server.',
@@ -406,8 +404,8 @@ async function submitToForm() {
     );
 
   } catch (err) {
-    console.error("Error submitting to form:", err);
-    showAlert('error', 'Gagal Mengirim ke Form', `Terjadi kesalahan: ${err.message}`);
+    console.error("Error submitting to GAS:", err);
+    showAlert('error', 'Gagal Mengirim ke Server', `Terjadi kesalahan: ${err.message}`);
   } finally {
     isSaving = false;
     confirmBtn.disabled = false;
@@ -416,7 +414,7 @@ async function submitToForm() {
 }
 
 /* ------------------------------------------------------------
-   FUNGSI RIWAYAT TRANSAKSI
+   FUNGSI RIWAYAT TRANSAKSI (dari GAS)
 ------------------------------------------------------------ */
 async function openHistoryModal() {
   historyModal.classList.remove('hidden');
@@ -434,7 +432,7 @@ function closeHistoryModal() {
 async function fetchHistory() {
   historyContent.innerHTML = '<p class="text-center text-gray-500 py-10">Memuat data...</p>';
   try {
-    const res = await fetch(`${APPS_SCRIPT_URL}?_=${Date.now()}`);
+    const res = await fetch(`${APPS_SCRIPT_URL}?_=${Date.now()}`); // Tambahkan cache buster
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     allHistoryData = data.data || []; // Simpan semua data
@@ -452,7 +450,7 @@ function applyHistoryFilter() {
     // Filter data berdasarkan kasir dan waktu
     let filteredData = allHistoryData.filter(trx => {
         const trxDate = new Date(trx.Tanggal); // Gunakan 'Tanggal' dari objek hasil GAS
-        const cashierMatch = selectedCashier === 'all' || (trx.Kasir === selectedCashier); // Gunakan 'Kasir' dari objek hasil GAS
+        const cashierMatch = selectedCashier === 'all' || (trx.Cashier === selectedCashier); // Gunakan 'Cashier' dari objek hasil GAS
         const timeMatch = trxDate >= twentyHoursAgo;
         return cashierMatch && timeMatch;
     });
@@ -472,7 +470,7 @@ function renderHistory(history) {
   history.forEach(trx => {
     const total = parseInt(trx.Total).toLocaleString('id-ID'); // Gunakan 'Total' dari objek hasil GAS
     const tgl = new Date(trx.Tanggal).toLocaleString('id-ID'); // Gunakan 'Tanggal' dari objek hasil GAS
-    const cashier = trx.Kasir; // Gunakan 'Kasir' dari objek hasil GAS
+    const cashier = trx.Cashier; // Gunakan 'Cashier' dari objek hasil GAS
     const items = Array.isArray(trx.Items) ? trx.Items.map(i => `${i.name} x${i.quantity}`).join(', ') : trx.Items || 'Tidak ada item';
     const card = document.createElement('div');
     card.className = "bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all";
