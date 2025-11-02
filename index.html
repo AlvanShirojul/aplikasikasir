@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS System - Serabih Telon (GAS & Gist)</title>
-    <!-- Gunakan CDN Tailwind CSS -->
+    <title>Aplikasi Kasir Angkringan (GAS & Gist)</title>
+    <!-- Gunakan Tailwind Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -194,7 +194,7 @@
             </div>
             
             <div class="p-4 flex justify-end gap-3 border-t mt-4">
-                <button onclick="closeHistoryModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition">Tutup</button>
+                <button onclick="closeHistoryModal()" class="bg-gray-300 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition">Tutup</button>
             </div>
         </div>
     </div>
@@ -203,7 +203,8 @@
 /* ------------------------------------------------------------
    KONFIGURASI URL API
 ------------------------------------------------------------ */
-const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/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/raw/products.json";
+// Ganti bagian ini dengan URL raw file products.json di Gist Anda
+const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/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/raw/products.json";
 // Ganti bagian ini dengan URL Web App GAS Anda untuk menyimpan dan mengambil riwayat
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyak_c3bUQ6FE4yu3A6tQv2IQiN5YM1xLsL_0iXZPk6-QXl-iGHInt8G9Xwm0EQB3RSaQ/exec"; // Ganti YOUR_DEPLOYMENT_ID
 
