@@ -206,7 +206,8 @@
 // Ganti bagian ini dengan URL raw file products.json di Gist Anda
 const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/b9f400f45a704f46621270287c26ac51/raw/872a27d6e8534d10c4a6ec8eeaa7756472cd46d7/Angkringan.json"; // URL produk yang baru
 // Ganti bagian ini dengan URL Web App GAS Anda untuk menyimpan dan mengambil riwayat
-const APPS_SCRIPT_URL = "https://spring-frog-1892.alpansirojul.workers.dev/"; // Ganti YOUR_DEPLOYMENT_ID
+const TargetUrl = "https://script.google.com/macros/s/AKfycbxldYba5CuCKZQULho9IXGV7kaKvFOBrwdAF8_JAxkbThbUTx2kmCB-31is3fyXbapUQA/exec";
+const ProxyUrl = "https://spring-frog-1892.alpansirojul.workers.dev/?url=";
 
 /* ------------------------------------------------------------
    VARIABEL GLOBAL
@@ -380,7 +381,7 @@ async function submitToGAS() {
     confirmBtn.disabled = true;
     confirmBtn.textContent = "Menyimpan...";
 
-    const res = await fetch(APPS_SCRIPT_URL, {
+    const res = await fetch(ProxyUrl + encodeURIComponent(TargetUrl) , {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(transactionData)
@@ -433,7 +434,7 @@ function closeHistoryModal() {
 async function fetchHistory() {
   historyContent.innerHTML = '<p class="text-center text-gray-500 py-10">Memuat data...</p>';
   try {
-    const res = await fetch(`${APPS_SCRIPT_URL}?_=${Date.now()}`); // Tambahkan cache buster
+    const res = await fetch(`${ProxyUrl}${TargetUrl}?_=${Date.now()}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     allHistoryData = data.data || []; // Simpan semua data
@@ -539,6 +540,7 @@ function closeAlertModal() {
 </script>
 </body>
 </html>
+
 
 
 
