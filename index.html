@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Kasir Angkringan (GAS & Gist)</title>
     <!-- Gunakan Tailwind Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Perbaikan: Hapus spasi -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Perbaikan: Hapus spasi -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
@@ -204,15 +204,15 @@
    KONFIGURASI URL API
 ------------------------------------------------------------ */
 // Ganti bagian ini dengan URL raw file products.json di Gist Anda
-const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/b9f400f45a704f46621270287c26ac51/raw/872a27d6e8534d10c4a6ec8eeaa7756472cd46d7/Angkringan.json"; // URL produk yang baru
+const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/b9f400f45a704f46621270287c26ac51/raw/872a27d6e8534d10c4a6ec8eeaa7756472cd46d7/Angkringan.json"; // Perbaikan: Hapus spasi
 // Ganti bagian ini dengan URL Web App GAS Anda untuk menyimpan dan mengambil riwayat
-const TargetUrl = "https://script.google.com/macros/s/AKfycbxldYba5CuCKZQULho9IXGV7kaKvFOBrwdAF8_JAxkbThbUTx2kmCB-31is3fyXbapUQA/exec";
-const ProxyUrl = "https://spring-frog-1892.alpansirojul.workers.dev/?url=";
+const TargetUrl = "https://script.google.com/macros/s/AKfycbxldYba5CuCKZQULho9IXGV7kaKvFOBrwdAF8_JAxkbThbUTx2kmCB-31is3fyXbapUQA/exec"; // Perbaikan: Hapus spasi
+const ProxyUrl = "https://spring-frog-1892.alpansirojul.workers.dev/?url="; // Perbaikan: Hapus spasi
 
 /* ------------------------------------------------------------
    VARIABEL GLOBAL
 ------------------------------------------------------------ */
-let cart = []; 
+let cart = [];
 let actionHistory = [];
 let lastTransactionData = null;
 let isSaving = false;
@@ -316,7 +316,7 @@ function updateCart() {
 
   totalElement.textContent = total.toLocaleString('id-ID');
   cartCountElement.textContent = totalItems;
-  
+
   const empty = cart.length === 0;
   saveButton.disabled = empty || isSaving;
   undoButton.disabled = empty;
@@ -540,11 +540,3 @@ function closeAlertModal() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
