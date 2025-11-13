@@ -265,7 +265,7 @@ async function fetchProducts() {
       btn.innerHTML = `
         <div class="font-semibold text-gray-800 truncate text-base">${p.name}</div>
         <div class="text-xs text-blue-600 font-medium">Rp ${p.price.toLocaleString('id-ID')}</div>`;
-      btn.onclick = () => addToCart(p.name, p.price);
+      btn.onclick = () => addToCart(p.id, p.name, p.price);
       productContainer.appendChild(btn);
     });
   } catch (err) {
@@ -277,8 +277,8 @@ async function fetchProducts() {
 /* ------------------------------------------------------------
    FUNGSI KERANJANG
 ------------------------------------------------------------ */
-function addToCart(name, price) {
-  actionHistory.push({ name, price });
+function addToCart(id, name, price) {
+  actionHistory.push({ id, name, price });
   updateCart();
 }
 
@@ -299,7 +299,7 @@ function clearCart() {
 function buildCartFromHistory() {
   const grouped = new Map();
   actionHistory.forEach(item => {
-    if (grouped.has(item.name)) {
+    if (grouped.has(item.id)) {
       grouped.get(item.name).quantity++;
     } else {
       grouped.set(item.name, { ...item, quantity: 1 });
@@ -539,6 +539,7 @@ function closeAlertModal() {
 </script>
 </body>
 </html>
+
 
 
 
