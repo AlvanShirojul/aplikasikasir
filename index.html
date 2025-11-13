@@ -13,12 +13,23 @@
         body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+
+            /* === Background Image Optimal === */
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)), /* overlay gelap */
+                url("https://raw.githubusercontent.com/AlvanShirojul/aplikasikasir/main/TRENDY%20ABSTRACT%20BACKGROUND.jpeg");
+
+            background-size: cover;          /* gambar menyesuaikan layar */
+            background-position: center;     /* fokus ke tengah */
+            background-repeat: no-repeat;
+            background-attachment: fixed;    /* efek parallax */
+            
             color: #ffffff;
             min-height: 100vh;
             margin: 0;
             padding: 0;
         }
+
         .receipt-font {
             font-family: 'Source Code Pro', monospace;
         }
@@ -41,27 +52,24 @@
 
         /* Card Produk Styling - Glassmorphism */
         .product-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(14px) saturate(150%);
+            -webkit-backdrop-filter: blur(14px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 16px;
             padding: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
         }
-        .product-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            background: rgba(255, 255, 255, 0.12);
+
+       .product-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.18);
         }
         .product-card:active {
             transform: translateY(0);
@@ -90,16 +98,16 @@
 
         /* Panel Bawah Styling - Glassmorphism */
         .bottom-panel {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 -6px 25px rgba(0,0,0,0.35);
         }
 
         /* Button Styling */
         .btn-primary {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
+            color: rgb(255, 255, 255);
             font-weight: 600;
             padding: 0.75rem 1.5rem;
             border-radius: 12px;
@@ -319,12 +327,12 @@
     <div class="container mx-auto p-3 sm:p-4 pb-56">
         <header class="mb-6 sm:mb-8 flex justify-between items-center">
             <div>
-                <h1 class="text-3xl sm:text-4xl font-bold text-white">POS APP.Angkringan</h1>
+                <h1 class="text-3xl sm:text-4xl font-bold text-white">App Jam Dalu</h1>
                 <p class="text-gray-300 text-sm sm:text-base">Pilih produk untuk ditambahkan ke transaksi.</p>
             </div>
             <!-- Tombol Riwayat -->
-            <button onclick="openHistoryModal()" class="btn-primary text-sm flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <button onclick="openHistoryModal()" class="btn-primary p-1 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 vw" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </button>
@@ -426,47 +434,56 @@
     <!-- Modal Riwayat Transaksi -->
     <div id="history-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
         <div class="history-modal-content">
-            <h2 class="history-header">Riwayat Transaksi</h2>
-            
-            <!-- Area Filter -->
-            <div class="filter-section">
-                <h3 class="font-semibold text-white-700 mb-2">Filter</h3>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <div class="flex-1">
-                        <label for="filter-cashier" class="filter-label">Role (Kasir)</label>
-                        <select id="filter-cashier" class="filter-select">
-                            <option value="all">Semua Kasir</option>
-                            <option value="Kasir 1 (Ajis)">Kasir 1 (Ajis)</option>
-                            <option value="Kasir 2 (Bobo)">Kasir 2 (Bobo)</option>
-                            <option value="Owner (Alvan)">Owner (Alvan)</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="applyHistoryFilter()" class="btn-primary w-full sm:w-auto">
-                            Terapkan
-                        </button>
-                    </div>
-                </div>
-                <div class="mt-2 text-xs text-gray-500">
-                    * Hanya menampilkan transaksi dari 20 jam terakhir.
-                </div>
-            </div>
-            <!-- /Area Filter -->
+            <div class="flex justify-between items-center history-header">
+                <h2 class="font-bold text-xl">Riwayat Transaksi</h2>
 
+                <!-- ICON FILTER -->
+                <button onclick="openFilterModal()" class="p-2 rounded-lg hover:bg-white/20 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.78 1.625L14 13.5V19a1 1 0 01-1.447.894l-4-2A1 1 0 018 17V13.5L3.22 5.625A1 1 0 013 4z" />
+                    </svg>
+                </button>
+            </div>
             <div id="history-content" class="overflow-y-auto flex-grow space-y-3 pr-2">
                 <p id="history-loading" class="text-center text-gray-300 py-10">Memuat data...</p>
             </div>
             
-            <div class="p-4 flex justify-end gap-3 border-t mt-4">
+            <div class="p-4 flex justify-between items-center border-t mt-4">
                 <button onclick="closeHistoryModal()" class="btn-secondary">Tutup</button>
+
+                <p class="text-right text-white text-sm">
+                    Total: <span id="history-total" class="font-bold text-blue-300">Rp 0</span>
+                </p>
             </div>
         </div>
     </div>
+    <!-- MODAL FILTER -->
+    <div id="filter-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex items-center justify-center p-4">
+        <div class="modal-content max-w-md w-full">
+            <h3 class="modal-header text-center">Filter Riwayat</h3>
+            <div class="mt-3">
+                <label class="filter-label">Pilih Kasir</label>
+                <select id="filter-cashier-modal" class="filter-select">
+                    <option value="all">Semua Kasir</option>
+                    <option value="Kasir 1 (Ajis)">Kasir 1 (Ajis)</option>
+                    <option value="Kasir 2 (Bobo)">Kasir 2 (Bobo)</option>
+                    <option value="Owner (Alvan)">Owner (Alvan)</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="closeFilterModal()" class="btn-secondary">Batal</button>
+                <button onclick="applyFilterModal()" class="btn-primary">Terapkan</button>
+            </div>
+
+        </div>
+    </div>
+
 <script>
 /* ------------------------------------------------------------
    KONFIGURASI URL API
 ------------------------------------------------------------ */
-const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/b9f400f45a704f46621270287c26ac51/raw/24f6c862dbc7a5e1fd1b45f7e0698e99b363d6ab/Angkringan.json";
+const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/b9f400f45a704f46621270287c26ac51/raw/a3bb54daa022cdf320f4465cbcb179e1876f41ce/Angkringan.json";
 const TargetUrl = "https://script.google.com/macros/s/AKfycbxldYba5CuCKZQULho9IXGV7kaKvFOBrwdAF8_JAxkbThbUTx2kmCB-31is3fyXbapUQA/exec";
 const ProxyUrl = "https://spring-frog-1892.alpansirojul.workers.dev/?url=";
 
@@ -563,10 +580,23 @@ function undoLastAction() {
 }
 
 function clearCart() {
-  if (actionHistory.length > 0) {
-    actionHistory = [];
-    updateCart();
-  }
+  if (actionHistory.length === 0) return;
+
+  showAlert(
+    'error',
+    'Hapus Semua Produk?',
+    'Apakah Anda yakin ingin mengosongkan keranjang?',
+    `
+      <button onclick="confirmClearCart()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition">Ya, Hapus</button>
+      <button onclick="closeAlertModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg transition">Batal</button>
+    `
+  );
+}
+
+function confirmClearCart() {
+  actionHistory = [];
+  updateCart();
+  closeAlertModal();
 }
 
 function buildCartFromHistory() {
@@ -716,7 +746,25 @@ async function submitToGAS() {
 async function openHistoryModal() {
   historyModal.classList.remove('hidden');
   await fetchHistory();
+  applyHistoryFilter();
 }
+function openFilterModal() {
+    el("filter-modal").classList.remove("hidden");
+}
+
+function closeFilterModal() {
+    el("filter-modal").classList.add("modal-leave");
+    setTimeout(() => {
+        el("filter-modal").classList.add("hidden");
+        el("filter-modal").classList.remove("modal-leave");
+    }, 250);
+}
+
+function applyFilterModal() {
+    applyHistoryFilter();
+    closeFilterModal();
+}
+
 
 function closeHistoryModal() {
   historyModal.classList.add('modal-leave');
@@ -734,7 +782,6 @@ async function fetchHistory() {
     const data = await res.json();
     // Apps Script returns { status: 'success', history: [...] }
     allHistoryData = data.history || [];
-    applyHistoryFilter();
   } catch (err) {
     console.error("fetchHistory error:", err);
     historyContent.innerHTML = `<p class="text-center text-red-400 py-10">Gagal memuat riwayat: ${escapeHtml(err.message)}</p>`;
@@ -742,7 +789,9 @@ async function fetchHistory() {
 }
 
 function applyHistoryFilter() {
-  const selectedCashier = (el('filter-cashier') && el('filter-cashier').value) || 'all';
+  const selectedCashier = el('filter-cashier-modal') 
+      ? el('filter-cashier-modal').value 
+      : 'all';
   const now = new Date();
   const twentyHoursAgo = new Date(now.getTime() - (20 * 60 * 60 * 1000));
 
@@ -792,6 +841,10 @@ function applyHistoryFilter() {
 }
 
 function renderHistory(transactions) {
+  // Hitung total transaksi
+  const sumTotal = transactions.reduce((sum, tx) => sum + (Number(tx.total) || 0), 0);
+  el("history-total").textContent = "Rp " + sumTotal.toLocaleString("id-ID");
+
   if (!transactions.length) {
     historyContent.innerHTML = '<p class="text-center text-gray-300 py-10">Tidak ada transaksi yang sesuai filter.</p>';
     return;
@@ -844,6 +897,7 @@ function closeReceiptModal() {
   setTimeout(() => {
     receiptModal.classList.add('hidden');
     receiptModal.classList.remove('modal-leave');
+    location.reload(); // refresh halaman setelah menutup struk
   }, 300);
 }
 
