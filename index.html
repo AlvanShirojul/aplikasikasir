@@ -5,22 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Kasir Angkringan (GAS & Gist)</title>
     <!-- Gunakan Tailwind Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script> <!-- Perbaikan: Hapus spasi -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Perbaikan: Hapus spasi -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
         .receipt-font {
             font-family: 'Source Code Pro', monospace;
         }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #666; }
+
+        /* Animasi Modal */
         .modal-enter { animation: fadeIn 0.3s ease-out; }
         .modal-leave { animation: fadeOut 0.3s ease-in; }
         @keyframes fadeIn {
@@ -32,7 +39,247 @@
             to { opacity: 0; transform: scale(0.95); }
         }
 
-        /* CSS untuk mencetak HANYA struk */
+        /* Card Produk Styling - Glassmorphism */
+        .product-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .product-card:active {
+            transform: translateY(0);
+        }
+        /* .product-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        } */
+        .product-name {
+            font-weight: 600;
+            font-size: 1.5rem;
+            text-align: center;
+            color: #ffffff;
+            line-height: 1.4;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .product-price {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #00b7ff;
+            margin-top: 4px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Panel Bawah Styling - Glassmorphism */
+        .bottom-panel {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Button Styling */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        /* Modal Styling - Glassmorphism */
+        .modal-content {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            max-width: 30rem;
+            width: 100%;
+            animation: fadeIn 0.3s ease-out;
+            color: #ffffff;
+        }
+        .modal-header {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .modal-subheader {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        /* Receipt Modal Styling */
+        .receipt-modal-content {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            max-width: 30rem;
+            width: 100%;
+            font-family: 'Source Code Pro', monospace;
+            color: #ffffff;
+        }
+        .receipt-title {
+            font-weight: bold;
+            font-size: 1.25rem;
+            text-align: center;
+            margin-bottom: 0.25rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .receipt-info {
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+        }
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.25rem 0;
+            color: #ffffff;
+        }
+        .receipt-total {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed #6b7280;
+            color: #ffffff;
+        }
+
+        /* History Modal Styling */
+        .history-modal-content {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            max-width: 40rem;
+            width: 100%;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            color: #ffffff;
+        }
+        .history-header {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 0.5rem;
+            color: #ffffff;
+        }
+        .filter-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .filter-label {
+            font-size: 0.875rem;
+            color: #f0f4f9;
+            margin-bottom: 0.5rem;
+        }
+        .filter-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: #38adfb;
+            transition: border-color 0.2s;
+        }
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            color: #ffffff;
+        }
+        .history-item-header {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .history-item-details {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Print Styles */
         @media print {
             body > *:not(#receipt-modal) { display: none; }
             #receipt-modal {
@@ -41,25 +288,42 @@
                 background-color: transparent !important;
             }
             #receipt-modal > div {
-                 max-width: none;
-                 width: 300px; /* Lebar standar kertas struk */
-                 margin: 0 auto;
-                 box-shadow: none;
+                max-width: none;
+                width: 300px;
+                margin: 0 auto;
+                box-shadow: none;
+                background: white;
+                padding: 1rem;
+                color: black;
             }
             .no-print { display: none; }
         }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #444;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-900 text-white">
 
     <div class="container mx-auto p-3 sm:p-4 pb-56">
         <header class="mb-6 sm:mb-8 flex justify-between items-center">
             <div>
-                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Point of Sale (GAS & Gist)</h1>
-                <p class="text-gray-500 text-sm sm:text-base">Pilih produk untuk ditambahkan ke transaksi.</p>
+                <h1 class="text-3xl sm:text-4xl font-bold text-white">POS APP.Angkringan</h1>
+                <p class="text-gray-300 text-sm sm:text-base">Pilih produk untuk ditambahkan ke transaksi.</p>
             </div>
             <!-- Tombol Riwayat -->
-            <button onclick="openHistoryModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm flex items-center justify-center">
+            <button onclick="openHistoryModal()" class="btn-primary text-sm flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -68,78 +332,78 @@
 
         <!-- Container Produk -->
         <div id="product-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-            <div id="loading-message" class="col-span-full text-center text-gray-500 py-10">
-                <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <div id="loading-message" class="col-span-full text-center text-gray-300 py-10">
+                <div class="loading-spinner mx-auto mb-3"></div>
                 Memuat produk...
             </div>
         </div>
     </div>
 
     <!-- Panel Bawah (Keranjang dan Total) -->
-    <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-lg">
+    <div class="fixed bottom-0 left-0 w-full bottom-panel">
         <div class="container mx-auto p-3 sm:p-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
                 <div class="w-full md:w-1/2">
                     <div class="flex items-center gap-3 mb-1 sm:mb-2">
-                        <h3 class="font-semibold text-sm text-gray-600">Keranjang (<span id="cart-count">0</span> item)</h3>
+                        <h3 class="font-semibold text-sm text-gray-300">Keranjang (<span id="cart-count">0</span> item)</h3>
                         <!-- Tombol Undo -->
-                        <button onclick="undoLastAction()" id="undo-button" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-3 rounded-full transition disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed" disabled>&#x21A9; Undo</button>
+                        <button onclick="undoLastAction()" id="undo-button" class="btn-secondary text-xs disabled:opacity-50 disabled:cursor-not-allowed">&#x21A9; Undo</button>
                         <!-- Tombol Clear -->
-                        <button onclick="clearCart()" id="clear-button" class="text-xs bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-full transition disabled:bg-red-300 disabled:text-gray-200 disabled:cursor-not-allowed" disabled>Clear</button>
+                        <button onclick="clearCart()" id="clear-button" class="btn-danger text-xs disabled:opacity-50 disabled:cursor-not-allowed">Clear</button>
                     </div>
-                    <div id="cart-items-container" class="text-xs text-gray-500 max-h-12 sm:max-h-16 overflow-y-auto pr-2">Keranjang masih kosong.</div>
+                    <div id="cart-items-container" class="text-xs text-gray-300 max-h-12 sm:max-h-16 overflow-y-auto pr-2">Keranjang masih kosong.</div>
                 </div>
                 
-                <hr class="w-full border-t border-gray-100 my-2 md:hidden">
+                <hr class="w-full border-t border-gray-700 my-2 md:hidden">
 
                 <div class="w-full md:w-auto flex items-center justify-between gap-4 md:gap-6">
                     <div class="text-right">
-                        <span class="text-sm text-gray-600">Total</span>
-                        <p class="text-xl sm:text-2xl font-bold text-gray-900">Rp <span id="total">0</span></p>
+                        <span class="text-sm text-gray-300">Total</span>
+                        <p class="text-xl sm:text-2xl font-bold text-white">Rp <span id="total">0</span></p>
                     </div>
-                    <button onclick="openCashierModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-5 sm:py-3 sm:px-6 rounded-lg shadow-md transition-transform transform active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm sm:text-base" id="save-button" disabled>SIMPAN</button>
+                    <button onclick="openCashierModal()" class="btn-primary py-3 px-5 sm:py-3 sm:px-6 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed" id="save-button" disabled>SIMPAN</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal Pilih Kasir -->
-    <div id="cashier-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm modal-enter">
-            <h2 class="text-xl font-bold mb-4">Pilih Kasir</h2>
-            <p class="text-gray-600 mb-4">Pilih nama kasir yang bertugas.</p>
+    <div id="cashier-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="modal-content">
+            <h2 class="modal-header">Pilih Kasir</h2>
+            <p class="modal-subheader">Pilih nama kasir yang bertugas.</p>
             
-            <select id="cashier-name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select id="cashier-name" class="filter-select">
                 <option value="" disabled selected>-- Pilih Kasir --</option>
                 <option value="Kasir 1 (Ajis)">Kasir 1 (Ajis)</option>
                 <option value="Kasir 2 (Bobo)">Kasir 2 (Bobo)</option>
                 <option value="Owner (Alvan)">Owner (Alvan)</option>
             </select>
             
-            <div class="flex justify-end gap-3 mt-6">
-                <button onclick="closeCashierModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition">Batal</button>
-                <button onclick="submitToGAS()" id="confirm-save-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">Simpan Transaksi</button>
+            <div class="modal-footer">
+                <button onclick="closeCashierModal()" class="btn-secondary">Batal</button>
+                <button onclick="submitToGAS()" id="confirm-save-button" class="btn-primary">Simpan Transaksi</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Alert Kustom -->
-    <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center modal-enter">
+    <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="modal-content text-center">
             <div id="alert-icon" class="mx-auto mb-4"></div>
-            <h2 id="alert-title" class="text-xl font-bold mb-2"></h2>
-            <p id="alert-message" class="text-gray-600 mb-6"></p>
-            <div id="alert-buttons" class="flex flex-wrap justify-center gap-3"></div>
+            <h2 id="alert-title" class="modal-header"></h2>
+            <p id="alert-message" class="modal-subheader"></p>
+            <div id="alert-buttons" class="flex flex-wrap justify-center gap-3 mt-4"></div>
         </div>
     </div>
 
     <!-- Modal Struk -->
-    <div id="receipt-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm receipt-font">
-            <div id="receipt-content" class="p-6 text-sm">
+    <div id="receipt-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="receipt-modal-content">
+            <div id="receipt-content" class="text-sm">
                 <div class="text-center mb-4">
-                    <h2 class="text-xl font-bold">SERABIH TELON</h2>
-                    <p>Utara Indormart Kanor Ds. Tejo Kec. Kanor Kab. Bojonegoro</p>
+                    <h2 class="receipt-title">SERABIH TELON</h2>
+                    <p class="receipt-info">Utara Indormart Kanor Ds. Tejo Kec. Kanor Kab. Bojonegoro</p>
                 </div>
                 <hr class="border-dashed my-2">
                 <div class="flex justify-between"><span>ID:</span><span id="receipt-id"></span></div>
@@ -152,25 +416,25 @@
                 <hr class="border-dashed my-2">
                 <p class="text-center mt-4">Terima Kasih!</p>
             </div>
-            <div class="p-4 bg-gray-100 flex justify-end gap-3 no-print">
-                <button onclick="closeReceiptModal()" class="bg-gray-300 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition">Tutup</button>
-                <button onclick="printReceipt()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">Print</button>
+            <div class="p-4 bg-gray-800 flex justify-end gap-3 no-print">
+                <button onclick="closeReceiptModal()" class="btn-secondary">Tutup</button>
+                <button onclick="printReceipt()" class="btn-primary">Print</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Riwayat Transaksi -->
-    <div id="history-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl modal-enter h-5/6 flex flex-col">
-            <h2 class="text-2xl font-bold mb-4 border-b pb-2">Riwayat Transaksi</h2>
+    <div id="history-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="history-modal-content">
+            <h2 class="history-header">Riwayat Transaksi</h2>
             
             <!-- Area Filter -->
-            <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h3 class="font-semibold text-gray-700 mb-2">Filter</h3>
+            <div class="filter-section">
+                <h3 class="font-semibold text-white-700 mb-2">Filter</h3>
                 <div class="flex flex-col sm:flex-row gap-3">
                     <div class="flex-1">
-                        <label for="filter-cashier" class="block text-sm text-gray-600 mb-1">Role (Kasir)</label>
-                        <select id="filter-cashier" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label for="filter-cashier" class="filter-label">Role (Kasir)</label>
+                        <select id="filter-cashier" class="filter-select">
                             <option value="all">Semua Kasir</option>
                             <option value="Kasir 1 (Ajis)">Kasir 1 (Ajis)</option>
                             <option value="Kasir 2 (Bobo)">Kasir 2 (Bobo)</option>
@@ -178,7 +442,7 @@
                         </select>
                     </div>
                     <div class="flex items-end">
-                        <button onclick="applyHistoryFilter()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition w-full sm:w-auto">
+                        <button onclick="applyHistoryFilter()" class="btn-primary w-full sm:w-auto">
                             Terapkan
                         </button>
                     </div>
@@ -190,21 +454,19 @@
             <!-- /Area Filter -->
 
             <div id="history-content" class="overflow-y-auto flex-grow space-y-3 pr-2">
-                <p id="history-loading" class="text-center text-gray-500 py-10">Memuat data...</p>
+                <p id="history-loading" class="text-center text-gray-300 py-10">Memuat data...</p>
             </div>
             
             <div class="p-4 flex justify-end gap-3 border-t mt-4">
-                <button onclick="closeHistoryModal()" class="bg-gray-300 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition">Tutup</button>
+                <button onclick="closeHistoryModal()" class="btn-secondary">Tutup</button>
             </div>
         </div>
     </div>
-
 <script>
 /* ------------------------------------------------------------
    KONFIGURASI URL API
 ------------------------------------------------------------ */
-// Ganti bagian ini dengan URL raw file products.json di Gist Anda
-const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/b9f400f45a704f46621270287c26ac51/raw/2412064e7c795ddbc5d69fb0d9a1574534a824ec/Angkringan.json";
+const GIST_URL_GET_PRODUCTS = "https://gist.githubusercontent.com/AlvanShirojul/b9f400f45a704f46621270287c26ac51/raw/24f6c862dbc7a5e1fd1b45f7e0698e99b363d6ab/Angkringan.json";
 const TargetUrl = "https://script.google.com/macros/s/AKfycbxldYba5CuCKZQULho9IXGV7kaKvFOBrwdAF8_JAxkbThbUTx2kmCB-31is3fyXbapUQA/exec";
 const ProxyUrl = "https://spring-frog-1892.alpansirojul.workers.dev/?url=";
 
@@ -255,22 +517,25 @@ async function fetchProducts() {
     productContainer.innerHTML = '';
 
     if (!products.length) {
-      productContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10">Belum ada produk dimuat dari Gist.</div>';
+      productContainer.innerHTML = '<div class="col-span-full text-center text-gray-300 py-10">Belum ada produk dimuat dari Gist.</div>';
       return;
     }
 
-    products.forEach(p => {
+    products.forEach((p, index) => {
       const btn = document.createElement('button');
-      btn.className = "bg-white border border-gray-200 rounded-lg p-3 text-center hover:shadow-md hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm";
+      btn.className = "product-card";
       btn.innerHTML = `
-        <div class="font-semibold text-gray-800 truncate text-base">${p.name}</div>
-        <div class="text-xs text-blue-600 font-medium">Rp ${p.price.toLocaleString('id-ID')}</div>`;
-      btn.onclick = () => addToCart(p.id, p.name, p.price);
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">Rp ${p.price.toLocaleString('id-ID')}</div>`;
+
+      // 🔥 PERBAIKAN PENTING → ID DI-PAKSA JADI STRING
+      btn.onclick = () => addToCart(String(p.id ?? `NOID-${index}`), p.name, p.price);
+
       productContainer.appendChild(btn);
     });
   } catch (err) {
     console.error("Error fetching products from Gist:", err);
-    loadingMessage.innerHTML = `<span class="text-red-500">Gagal memuat produk dari Gist: ${err.message}</span>`;
+    loadingMessage.innerHTML = `<span class="text-red-400">Gagal memuat produk dari Gist: ${err.message}</span>`;
   }
 }
 
@@ -278,7 +543,15 @@ async function fetchProducts() {
    FUNGSI KERANJANG
 ------------------------------------------------------------ */
 function addToCart(id, name, price) {
-  actionHistory.push({ id, name, price });
+  // debug
+  console.log("ADD CART:", id, name, price);
+
+  // ensure types
+  const pid = String(id);
+  const pname = String(name);
+  const pprice = Number(price) || 0;
+
+  actionHistory.push({ id: pid, name: pname, price: pprice });
   updateCart();
 }
 
@@ -298,19 +571,27 @@ function clearCart() {
 
 function buildCartFromHistory() {
   const grouped = new Map();
+
   actionHistory.forEach(item => {
-    if (grouped.has(item.id)) {
-      grouped.get(item.id).quantity++;
+    const key = String(item.id);
+    if (grouped.has(key)) {
+      grouped.get(key).quantity++;
     } else {
-      grouped.set(item.id, { ...item, quantity: 1 });
+      // copy and ensure numeric price
+      grouped.set(key, { id: key, name: item.name, price: Number(item.price) || 0, quantity: 1 });
     }
   });
+
   return Array.from(grouped.values());
 }
 
 function updateCart() {
   cart = buildCartFromHistory();
-  const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+  // ensure quantities & prices are numbers
+  cart = cart.map(i => ({ id: String(i.id), name: i.name, price: Number(i.price) || 0, quantity: Number(i.quantity) || 0 }));
+
+  const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
   const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
 
   totalElement.textContent = total.toLocaleString('id-ID');
@@ -319,11 +600,14 @@ function updateCart() {
   const empty = cart.length === 0;
   saveButton.disabled = empty || isSaving;
   undoButton.disabled = empty;
-  clearButton.disabled = empty; // Aktifkan tombol clear jika keranjang tidak kosong
+  clearButton.disabled = empty;
 
   cartItemsContainer.innerHTML = empty
     ? 'Keranjang masih kosong.'
-    : cart.map(i => `<span class="bg-gray-100 py-0.5 px-1.5 rounded-full text-gray-700">${i.name} <span class="text-blue-600 font-semibold">x${i.quantity}</span></span>`).join(' ');
+    : cart.map(i => `<span class="bg-gray-700 py-0.5 px-1.5 rounded-full text-gray-200">${escapeHtml(i.name)} <span class="text-blue-400 font-semibold">x${i.quantity}</span></span>`).join(' ');
+
+  // debug
+  console.log("CART NOW:", cart);
 }
 
 /* ------------------------------------------------------------
@@ -363,50 +647,60 @@ async function submitToGAS() {
     return;
   }
 
-  const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  // ensure numbers
+  const total = cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0);
   const transactionId = `TRX-${Date.now().toString().slice(-8)}`;
   const transactionDate = new Date().toISOString();
+
+  // prepare items: ensure fields names expected by GAS (quantity not qty)
+  const itemsToSend = cart.map(i => ({
+    id: String(i.id),
+    name: i.name,
+    price: Number(i.price) || 0,
+    quantity: Number(i.quantity) || 0
+  }));
 
   const transactionData = {
     id: transactionId,
     cashier: cashier,
     total: total,
-    date: transactionDate, // Tidak wajib dikirim jika GAS hanya mencatat waktu saat ini
-    items: cart
+    date: transactionDate,
+    items: itemsToSend
   };
+
+  // debug final payload
+  console.log("SUBMIT PAYLOAD:", transactionData);
 
   try {
     isSaving = true;
     confirmBtn.disabled = true;
     confirmBtn.textContent = "Menyimpan...";
 
-    const res = await fetch(ProxyUrl + encodeURIComponent(TargetUrl) , {
+    const res = await fetch(ProxyUrl + encodeURIComponent(TargetUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(transactionData)
     });
 
     if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`HTTP ${res.status} - ${errorText}`);
+      const errorText = await res.text();
+      throw new Error(`HTTP ${res.status} - ${errorText}`);
     }
     const responseData = await res.json();
     if (responseData.status !== 'success') {
-        throw new Error(responseData.message || 'Gagal menyimpan transaksi.');
+      throw new Error(responseData.message || 'Gagal menyimpan transaksi.');
     }
 
-    // Simpan data lokal untuk struk
     lastTransactionData = transactionData;
 
-    // Tampilkan pesan sukses
     showAlert('success', 'Transaksi Tersimpan', 'Data transaksi berhasil dikirim ke server.',
       `<button onclick="showReceipt()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg">Cetak Struk</button>
-       <button onclick="closeAlertModal(); closeCashierModal(); actionHistory = []; updateCart(); closeAlertModal(); " class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg">OK</button>`
+       <button onclick="closeAlertModal(); closeCashierModal(); actionHistory = []; updateCart();" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg">OK</button>`
     );
 
   } catch (err) {
     console.error("Error submitting to GAS:", err);
-    showAlert('error', 'Gagal Mengirim ke Server', `Terjadi kesalahan: ${err.message}`);
+    showAlert('error', 'Gagal Mengirim ke Server', `Terjadi kesalahan: ${escapeHtml(err.message)}`);
   } finally {
     isSaving = false;
     confirmBtn.disabled = false;
@@ -416,6 +710,8 @@ async function submitToGAS() {
 
 /* ------------------------------------------------------------
    FUNGSI RIWAYAT TRANSAKSI (dari GAS)
+   Note: Apps Script returns { status, history }
+   where history = array of line-item rows (per product)
 ------------------------------------------------------------ */
 async function openHistoryModal() {
   historyModal.classList.remove('hidden');
@@ -431,57 +727,90 @@ function closeHistoryModal() {
 }
 
 async function fetchHistory() {
-  historyContent.innerHTML = '<p class="text-center text-gray-500 py-10">Memuat data...</p>';
+  historyContent.innerHTML = '<p class="text-center text-gray-300 py-10">Memuat data...</p>';
   try {
-    const res = await fetch(`${ProxyUrl}${TargetUrl}?_=${Date.now()}`);
+    const res = await fetch(`${ProxyUrl}${TargetUrl}?action=history&_=${Date.now()}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    allHistoryData = data.data || []; // Simpan semua data
-    applyHistoryFilter(); // Terapkan filter setelah data dimuat
+    // Apps Script returns { status: 'success', history: [...] }
+    allHistoryData = data.history || [];
+    applyHistoryFilter();
   } catch (err) {
-    historyContent.innerHTML = `<p class="text-center text-red-500 py-10">Gagal memuat riwayat: ${err.message}</p>`;
+    console.error("fetchHistory error:", err);
+    historyContent.innerHTML = `<p class="text-center text-red-400 py-10">Gagal memuat riwayat: ${escapeHtml(err.message)}</p>`;
   }
 }
 
 function applyHistoryFilter() {
-    const selectedCashier = el('filter-cashier').value;
-    const now = new Date();
-    const twentyHoursAgo = new Date(now.getTime() - (20 * 60 * 60 * 1000));
+  const selectedCashier = (el('filter-cashier') && el('filter-cashier').value) || 'all';
+  const now = new Date();
+  const twentyHoursAgo = new Date(now.getTime() - (20 * 60 * 60 * 1000));
 
-    // Filter data berdasarkan kasir dan waktu
-    let filteredData = allHistoryData.filter(trx => {
-        const trxDate = new Date(trx.Tanggal); // Gunakan 'Tanggal' dari objek hasil GAS
-        const cashierMatch = selectedCashier === 'all' || (trx.Cashier === selectedCashier); // Gunakan 'Cashier' dari objek hasil GAS
-        const timeMatch = trxDate >= twentyHoursAgo;
-        return cashierMatch && timeMatch;
+  // allHistoryData is array of line-items. Group by ID Transaksi to produce transactions.
+  const txMap = new Map();
+  allHistoryData.forEach(row => {
+    const trxId = String(row['ID Transaksi'] ?? row['ID'] ?? row['ID Transaksi'] ?? 'UNKNOWN');
+    const trxDateRaw = row['Tanggal'] || row['tanggal'] || row['Date'] || null;
+    const cashier = row['Cashier'] || row['cashier'] || row['Kasir'] || '';
+
+    const qty = Number(row['Qty'] ?? row['qty'] ?? row['quantity'] ?? 0) || 0;
+    const price = Number(row['Harga'] ?? row['harga'] ?? row['price'] ?? 0) || 0;
+    const subtotal = Number(row['Subtotal'] ?? row['subtotal'] ?? qty * price) || (qty * price);
+
+    if (!txMap.has(trxId)) {
+      txMap.set(trxId, {
+        id: trxId,
+        date: trxDateRaw ? new Date(trxDateRaw) : new Date(),
+        cashier: cashier,
+        total: 0,
+        items: []
+      });
+    }
+    const tx = txMap.get(trxId);
+    tx.total += subtotal;
+    tx.items.push({
+      id: row['ID Produk'] || row['id produk'] || row['ID'] || row['id'] || '',
+      name: row['Nama Produk'] || row['nama produk'] || row['name'] || row['nama'] || '',
+      qty: qty,
+      price: price,
+      subtotal: subtotal
     });
+  });
 
-    // Urutkan dari yang terbaru
-    filteredData.sort((a, b) => new Date(b.Tanggal) - new Date(a.Tanggal)); // Gunakan 'Tanggal' dari objek hasil GAS
+  // Convert map to array and apply time + cashier filter
+  let txs = Array.from(txMap.values());
+  txs = txs.filter(t => {
+    const timeMatch = new Date(t.date) >= twentyHoursAgo;
+    const cashierMatch = selectedCashier === 'all' || !selectedCashier || t.cashier === selectedCashier;
+    return timeMatch && cashierMatch;
+  });
 
-    renderHistory(filteredData);
+  // Sort newest first
+  txs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  renderHistory(txs);
 }
 
-function renderHistory(history) {
-  if (!history.length) {
-    historyContent.innerHTML = '<p class="text-center text-gray-500 py-10">Tidak ada transaksi yang sesuai filter.</p>';
+function renderHistory(transactions) {
+  if (!transactions.length) {
+    historyContent.innerHTML = '<p class="text-center text-gray-300 py-10">Tidak ada transaksi yang sesuai filter.</p>';
     return;
   }
   historyContent.innerHTML = '';
-  history.forEach(trx => {
-    const total = parseInt(trx.Total).toLocaleString('id-ID'); // Gunakan 'Total' dari objek hasil GAS
-    const tgl = new Date(trx.Tanggal).toLocaleString('id-ID'); // Gunakan 'Tanggal' dari objek hasil GAS
-    const cashier = trx.Cashier; // Gunakan 'Cashier' dari objek hasil GAS
-    const items = Array.isArray(trx.Items) ? trx.Items.map(i => `${i.name} x${i.quantity}`).join(', ') : trx.Items || 'Tidak ada item';
+  transactions.forEach(trx => {
+    const total = Number(trx.total || 0).toLocaleString('id-ID');
+    const tgl = new Date(trx.date).toLocaleString('id-ID');
+    const cashier = trx.cashier || '-';
+    const itemsText = trx.items.map(i => `${escapeHtml(i.name)} x${i.qty}`).join(', ');
     const card = document.createElement('div');
-    card.className = "bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all";
+    card.className = "bg-gray-800 border border-gray-700 rounded-lg p-3 shadow-sm hover:shadow-md transition-all";
     card.innerHTML = `
       <div class="flex justify-between items-center border-b pb-2 mb-2">
-        <span class="font-bold text-lg text-gray-900">Rp ${total}</span>
-        <span class="text-xs text-gray-500">${tgl}</span>
+        <span class="font-bold text-lg text-white">Rp ${total}</span>
+        <span class="text-xs text-gray-400">${tgl}</span>
       </div>
-      <p class="text-sm text-gray-700 mb-1"><span class="font-semibold">Kasir:</span> ${cashier}</p>
-      <p class="text-xs text-gray-600 truncate">Items: ${items}</p>`;
+      <p class="text-sm text-gray-200 mb-1"><span class="font-semibold">Kasir:</span> ${escapeHtml(cashier)}</p>
+      <p class="text-xs text-gray-500 truncate">Items: ${itemsText}</p>`;
     historyContent.appendChild(card);
   });
 }
@@ -497,14 +826,15 @@ function showReceipt() {
   el('receipt-id').textContent = id;
   el('receipt-date').textContent = new Date(date).toLocaleString('id-ID');
   el('receipt-cashier').textContent = cashier;
-  el('receipt-total').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+  el('receipt-total').textContent = `Rp ${Number(total).toLocaleString('id-ID')}`;
+
   el('receipt-items').innerHTML = items.map(i => `
-      <div class="flex justify-between text-gray-800">
-        <span>${i.name}</span>
-        <span>${(i.quantity * i.price).toLocaleString('id-ID')}</span>
+      <div class="flex justify-between text-white">
+        <span>${escapeHtml(i.name)}</span>
+        <span>${(Number(i.quantity) * Number(i.price)).toLocaleString('id-ID')}</span>
       </div>
-      <div class="flex justify-end text-xs text-gray-500">
-        ${i.quantity} x ${i.price.toLocaleString('id-ID')}
+      <div class="flex justify-end text-xs text-gray-400">
+        ${Number(i.quantity)} x ${Number(i.price).toLocaleString('id-ID')}
       </div>`).join('');
   receiptModal.classList.remove('hidden');
 }
@@ -523,8 +853,8 @@ function showAlert(type, title, message, buttons = `<button onclick="closeAlertM
   el('alert-title').textContent = title;
   el('alert-message').innerHTML = message;
   el('alert-icon').innerHTML = type === 'success'
-    ? `<svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
-    : `<svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+    ? `<svg class="w-16 h-16 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+    : `<svg class="w-16 h-16 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
   el('alert-buttons').innerHTML = buttons;
   alertModal.classList.remove('hidden');
 }
@@ -536,12 +866,19 @@ function closeAlertModal() {
     alertModal.classList.remove('modal-leave');
   }, 300);
 }
+
+/* ------------------------------------------------------------
+   UTIL: escape HTML untuk keamanan tampilan
+------------------------------------------------------------ */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 </script>
 </body>
 </html>
-
-
-
-
-
-
